@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 (2026-08-29)
+
+- Fix review issues: description without the word "Obsidian"
+- Use Obsidian's `getLanguage()` for auto language detection (drop `localStorage`)
+- Persist grid zoom in plugin data instead of `localStorage`
+- Use `window.clearTimeout()` for popout compatibility
+- Clean up unused code; recognized GPL-3.0 license file
+
 ## 0.1.0 (2026-08-28)
 
 - Initial release: week grid with 第 N 周 / today highlight / now line

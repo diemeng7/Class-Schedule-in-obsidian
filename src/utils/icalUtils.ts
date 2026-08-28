@@ -8,7 +8,7 @@
 import type { Semester, TimetableSlot } from "../types";
 import {
   addDays, getMondayOfWeek, localIso, schoolDayOffset,
-  slotInWeek, timeToMinutes, totalWeeks, weekRuleMatches,
+  slotInWeek, totalWeeks, weekRuleMatches,
 } from "./weekUtils";
 
 const CRLF = "\r\n";

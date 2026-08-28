@@ -517,10 +517,11 @@
   $: isDayMode = _isMobileApp && viewMode === "day";
   $: isAgendaMode = _isMobileApp && viewMode === "agenda";
   $: selectedOffset = (() => {
-    if (!isCurrentWeek || days.length === 0) return days[0]?.offset ?? 0;
-    const t = new Date();
-    const todayOff = t.getDay() === 0 ? 6 : t.getDay() - 1;
-    return days.find(d => d.offset === todayOff)?.offset ?? days[0].offset;
+    // Follow the currently viewed date within its week, so tapping a day
+    // pill (or navigating) actually moves the day list.
+    const a = new Date(currentMonday); a.setHours(0, 0, 0, 0);
+    const b = new Date(currentDate);   b.setHours(0, 0, 0, 0);
+    return Math.round((b.getTime() - a.getTime()) / 86400000);
   })();
   $: selectedDay = _dep(_tick, days.find(d => d.offset === selectedOffset) ?? days[0]);
   $: renderDays = isDayMode && selectedDay ? [selectedDay] : days;
@@ -537,7 +538,7 @@
 </script>
 
 
-<div class="cs-week-view" class:cs-week-view--compact={compact} bind:this={_rootEl}>
+<div class="cs-week-view" class:cs-week-view--compact={compact} class:cs-week-view--mobile={_isMobileApp} bind:this={_rootEl}>
   <!-- ── Header ─────────────────────────────────────────────────────────── -->
   <header class="cs-header" class:cs-header--mobile={_isMobileApp}>
     <div class="cs-header-identity">
@@ -584,6 +585,11 @@
         <button class="cs-mode-btn" class:cs-mode-btn--on={!isDayMode && !isAgendaMode} role="tab" aria-selected={!isDayMode && !isAgendaMode} on:click={() => setMobileMode("grid")}>{plugin.t("mode.week")}</button>
       </div>
       <div class="cs-mobile-acts">
+        <select class="cs-semester-select cs-semester-select--mobile" value={activeSemesterId} on:change={onSemesterChange} aria-label={plugin.t("week.semester")}>
+          {#each semesters as sem (sem.id)}
+            <option value={sem.id}>{sem.name}</option>
+          {/each}
+        </select>
         <button class="cs-btn cs-mobile-act" on:click={onToday} aria-label={plugin.t("common.today")} use:obsIcon={"calendar"}></button>
         <button class="cs-btn cs-mobile-act" on:click={addAnySlot} aria-label={plugin.t("week.addCourse")} use:obsIcon={"plus"}></button>
         <button class="cs-btn cs-mobile-act" on:click={onOpenSettings} aria-label={plugin.t("common.settings")} use:obsIcon={"settings"}></button>
@@ -591,39 +597,40 @@
     </div>
   {/if}
 
-  <!-- ── Next-class bar ─────────────────────────────────────────────────── -->
-  <div class="cs-next-bar" class:cs-next-bar--live={nextClass.has} style={nextClass.has ? ("--nc:" + (nextClass.colour || "#888")) : ""}>
-    {#if !isCurrentWeek}
-      <span class="cs-next-dot"></span>
-      <span class="cs-next-text cs-next-text--muted">{plugin.t("week.viewingWeek", { n: weekNo })}</span>
-    {:else if nextClass.has}
-      <span class="cs-next-dot" class:cs-next-dot--live={nextClass.ongoing}></span>
-      <span class="cs-next-text">
-        {nextClass.ongoing
-          ? plugin.t("week.classOngoing") + " · "
-          : plugin.t("week.nextClass", { name: (nextClass.emoji ? nextClass.emoji + " " : "") + nextClass.name }) + " · "}
-        {nextClass.startLabel}{#if nextClass.room} · {nextClass.room}{/if}
-      </span>
-      <span class="cs-next-mins">
-        {nextClassInfo}
-      </span>
-    {:else}
-      <span class="cs-next-text cs-next-text--muted">
-        {nextClass.key === "holiday"
-          ? plugin.t("week.todayHoliday")
-          : nextClass.key === "beforeStart"
-            ? plugin.t("week.beforeStart")
-            : plugin.t("week.noClassToday")}
-      </span>
-    {/if}
-  </div>
+  <!-- ── Info strip: next class + weekly stats ───────────────────────────── -->
+  <div class="cs-info-strip">
+    <div class="cs-next-bar" class:cs-next-bar--live={nextClass.has} style={nextClass.has ? ("--nc:" + (nextClass.colour || "#888")) : ""}>
+      {#if !isCurrentWeek}
+        <span class="cs-next-dot"></span>
+        <span class="cs-next-text cs-next-text--muted">{plugin.t("week.viewingWeek", { n: weekNo })}</span>
+      {:else if nextClass.has}
+        <span class="cs-next-dot" class:cs-next-dot--live={nextClass.ongoing}></span>
+        <span class="cs-next-text">
+          {nextClass.ongoing
+            ? plugin.t("week.classOngoing") + " · "
+            : plugin.t("week.nextClass", { name: (nextClass.emoji ? nextClass.emoji + " " : "") + nextClass.name }) + " · "}
+          {nextClass.startLabel}{#if nextClass.room} · {nextClass.room}{/if}
+        </span>
+        <span class="cs-next-mins">
+          {nextClassInfo}
+        </span>
+      {:else}
+        <span class="cs-next-text cs-next-text--muted">
+          {nextClass.key === "holiday"
+            ? plugin.t("week.todayHoliday")
+            : nextClass.key === "beforeStart"
+              ? plugin.t("week.beforeStart")
+              : plugin.t("week.noClassToday")}
+        </span>
+      {/if}
+    </div>
 
-  <!-- ── Weekly stats ───────────────────────────────────────────────────── -->
-  <div class="cs-stats-bar">
-    <span class="cs-stat"><b>{weekStats.total}</b>{plugin.t("stats.classes")}</span>
-    <span class="cs-stat"><b>{weekStats.done}</b>{plugin.t("stats.done")}</span>
-    <span class="cs-stat"><b>{weekStats.left}</b>{plugin.t("stats.left")}</span>
-    {#if weekStats.credits > 0}<span class="cs-stat"><b>{weekStats.credits}</b>{plugin.t("stats.credits")}</span>{/if}
+    <div class="cs-stats-bar">
+      <span class="cs-stat"><b>{weekStats.total}</b>{plugin.t("stats.classes")}</span>
+      <span class="cs-stat"><b>{weekStats.done}</b>{plugin.t("stats.done")}</span>
+      <span class="cs-stat"><b>{weekStats.left}</b>{plugin.t("stats.left")}</span>
+      {#if weekStats.credits > 0}<span class="cs-stat"><b>{weekStats.credits}</b>{plugin.t("stats.credits")}</span>{/if}
+    </div>
   </div>
 
   <!-- ── Unscheduled courses strip (无固定时间) ──────────────────────────── -->
@@ -1248,6 +1255,48 @@
 
   /* Event day cards */
   .cs-dcard--event { border-style:dashed; }
+
+  /* ── Mobile layout: compact chrome, more room for content ─────────────── */
+  .cs-info-strip { display:contents; }
+  .cs-week-view--mobile .cs-info-strip {
+    display:flex; align-items:center; gap:4px;
+    border-bottom:1px solid var(--background-modifier-border);
+  }
+  .cs-week-view--mobile .cs-next-bar {
+    flex:1 1 0; min-width:0; padding:5px 10px; border-bottom:none; font-size:12px;
+  }
+  .cs-week-view--mobile .cs-next-mins { padding:1px 8px; font-size:11px; }
+  .cs-week-view--mobile .cs-stats-bar {
+    flex-shrink:0; padding:5px 10px 5px 0; border-bottom:none; gap:8px;
+  }
+  .cs-week-view--mobile .cs-stat { font-size:10px; }
+  .cs-week-view--mobile .cs-stat b { margin-right:2px; }
+
+  .cs-week-view--mobile .cs-header {
+    grid-template-columns:1fr auto; padding:6px 10px; gap:8px;
+  }
+  .cs-week-view--mobile .cs-header-actions { display:none; }
+  .cs-week-view--mobile .cs-week-label { font-size:15px; gap:6px; }
+  .cs-week-view--mobile .cs-date-range { font-size:11px; }
+  .cs-week-view--mobile .cs-nav-arrow { width:28px; height:28px; }
+  .cs-week-view--mobile .cs-nav-centre { padding:5px 10px; font-size:12px; }
+
+  .cs-week-view--mobile .cs-mobile-bar { padding:6px 10px; gap:8px; }
+  .cs-week-view--mobile .cs-mobile-modes { gap:4px; padding:2px; }
+  .cs-week-view--mobile .cs-mode-btn { padding:4px 12px; font-size:11px; }
+  .cs-week-view--mobile .cs-mobile-act { width:28px; height:28px; }
+  .cs-semester-select--mobile { max-width:110px; font-size:11px; padding:3px 6px; }
+
+  .cs-week-view--mobile .cs-unscheduled-bar {
+    flex-wrap:nowrap; overflow-x:auto; padding:4px 10px; gap:6px;
+  }
+  .cs-week-view--mobile .cs-unscheduled-chip { white-space:nowrap; font-size:11px; padding:2px 8px; }
+  .cs-week-view--mobile .cs-unscheduled-label { font-size:10px; }
+
+  .cs-week-view--mobile .cs-day-strip { padding:8px 10px; gap:6px; }
+  .cs-week-view--mobile .cs-day-pill { min-width:50px; padding:6px 8px; }
+  .cs-week-view--mobile .cs-daylist { padding:10px 12px 70px; gap:8px; }
+  .cs-week-view--mobile .cs-agenda { padding:10px 12px 70px; gap:12px; }
 
   /* Compact mode */
   .cs-week-view--compact .cs-header { padding:6px 12px; }

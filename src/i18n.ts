@@ -4,6 +4,7 @@
  */
 
 import type { Lang } from "./types";
+import { getLanguage } from "obsidian";
 
 type Dict = Record<string, string>;
 
@@ -440,9 +441,9 @@ export function translate(lang: Lang, key: string, vars?: Record<string, string 
 /** Detect whether Obsidian is running in Chinese. */
 export function detectObsidianLang(): Lang {
   try {
-    const stored = window.localStorage.getItem("language") ?? "";
-    if (stored.toLowerCase().startsWith("zh")) return "zh";
-    if (stored.toLowerCase().startsWith("en")) return "en";
+    const lang = getLanguage().toLowerCase();
+    if (lang.startsWith("zh")) return "zh";
+    if (lang.startsWith("en")) return "en";
     const locale = (window.moment?.locale() ?? "").toLowerCase();
     if (locale.startsWith("zh")) return "zh";
     if (locale.startsWith("en")) return "en";

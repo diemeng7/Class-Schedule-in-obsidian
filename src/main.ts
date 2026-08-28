@@ -82,23 +82,17 @@ export default class ClassSchedulePlugin extends Plugin {
     });
   }
 
-  // ── Grid scale (device-local, never synced) ──────────────────────────────
-  private static readonly GRID_SCALE_KEY = "class-schedule:gridScale";
-
+  // ── Grid scale ───────────────────────────────────────────────────────────
   getGridScale(): number {
-    try {
-      const raw = window.localStorage.getItem(ClassSchedulePlugin.GRID_SCALE_KEY);
-      const n = raw != null ? parseInt(raw, 10) : NaN;
-      if (!isNaN(n) && n >= 60 && n <= 240) return n;
-    } catch { /* storage unavailable */ }
+    const n = this.data.gridScale;
+    if (typeof n === "number" && n >= 60 && n <= 240) return n;
     return Platform.isMobile ? 150 : 120;
   }
 
   setGridScale(pxPerHour: number): number {
     const clamped = Math.max(60, Math.min(240, Math.round(pxPerHour)));
-    try {
-      window.localStorage.setItem(ClassSchedulePlugin.GRID_SCALE_KEY, String(clamped));
-    } catch { /* storage unavailable */ }
+    this.data.gridScale = clamped;
+    void this.saveSettings();
     this.refreshViews();
     return clamped;
   }
@@ -239,7 +233,7 @@ export default class ClassSchedulePlugin extends Plugin {
 
   async flushPendingSave() {
     if (this.saveTimer != null) {
-      clearTimeout(this.saveTimer);
+      window.clearTimeout(this.saveTimer);
       this.saveTimer = null;
     }
     await this.saveData(this.data);

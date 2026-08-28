@@ -130,4 +130,6 @@ export interface PluginData {
   semesters: Semester[];
   /** Compact grid / card density (global appearance). */
   compact?: boolean;
+  /** Grid zoom: pixel height per hour (60–240). */
+  gridScale?: number;
 }
