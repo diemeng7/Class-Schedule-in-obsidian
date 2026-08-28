@@ -1,0 +1,10 @@
+{
+	"id": "class-schedule",
+	"name": "Class Schedule",
+	"version": "0.1.0",
+	"minAppVersion": "1.7.2",
+	"description": "A student-friendly timetable plugin for Obsidian: week-based course schedule with odd/even weeks, colours and a bilingual UI (中文/English).",
+	"author": "diemeng7",
+	"authorUrl": "https://github.com/diemeng7",
+	"isDesktopOnly": false
+}

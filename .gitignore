@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Source maps
+*.js.map
+
+# Obsidian sync conflict files
+*(# *#)*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+/docs/advertising-posts.md
+/docs/REVIEW-BACKLOG.md
+/docs/RELEASE-*.md
+/docs/COMMITS-*.md
+
+# stray local verification artifacts (safe to delete)
+_tw_test.*
+_cs_*
+/_TO DELETE/
+
+# Bundled test output (test/run.mjs)
+/.test-build/
+
+# Local release packaging
+/release/

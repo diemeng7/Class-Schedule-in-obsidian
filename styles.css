@@ -1,0 +1,257 @@
+/* Class Schedule — global styles (modals, settings, pickers).
+   Week-view styles live inside WeekView.svelte. */
+
+/* The Svelte mount target — guarantee a full-height flex context so the
+   week grid always gets the remaining view height. */
+.workspace-leaf-content .cs-root,
+.cs-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.cs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 13px;
+  font-family: var(--font-interface);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, transform 0.08s;
+}
+.cs-btn:hover { background: var(--background-modifier-hover); }
+.cs-btn:active { transform: scale(0.97); }
+.cs-btn--primary {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+.cs-btn--primary:hover { background: var(--interactive-accent-hover); }
+.cs-btn--danger { color: var(--text-error); border-color: var(--color-red, #e05555); }
+.cs-btn--danger:hover { background: color-mix(in srgb, var(--color-red, #e05555) 14%, transparent); }
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+.cs-input,
+.cs-select,
+.cs-textarea {
+  width: 100%;
+  padding: 6px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 13px;
+  font-family: var(--font-interface);
+  box-sizing: border-box;
+}
+.cs-input:focus, .cs-select:focus, .cs-textarea:focus {
+  border-color: var(--interactive-accent);
+  outline: none;
+}
+.cs-input--num { width: 72px; }
+.cs-input--emoji { width: 72px; text-align: center; }
+.cs-textarea { min-height: 60px; resize: vertical; }
+.cs-select { width: auto; max-width: 100%; }
+.cs-prompt-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 14px;
+}
+
+/* ── Modal layout ───────────────────────────────────────────────────────── */
+.cs-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cs-course-modal .modal-content { padding-bottom: 8px; }
+
+.cs-form-section {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.cs-form-section h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cs-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.cs-form-row--end { justify-content: flex-end; }
+.cs-form-row label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.cs-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.cs-form-field label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cs-colour-btn { align-items: center; }
+.cs-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  vertical-align: middle;
+}
+
+/* ── Week buttons (tap-to-select) ────────────────────────────────────────── */
+.cs-week-buttons-title {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 8px 0 6px;
+}
+.cs-week-buttons {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.cs-week-btn {
+  aspect-ratio: 1.6;
+  min-width: 0;
+  padding: 2px;
+  border-radius: 5px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.cs-week-btn:hover { background: var(--background-modifier-hover); }
+.cs-week-btn--on {
+  background: var(--interactive-accent);
+  border-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+.cs-week-quick { margin-bottom: 4px; }
+.cs-emoji-btn { font-size: 15px; padding: 4px 10px; }
+
+/* ── Day override form ───────────────────────────────────────────────────── */
+.cs-override-form .setting-item { border-bottom: 1px solid var(--background-modifier-border); }
+
+/* ── Emoji picker popup ─────────────────────────────────────────────────── */
+.cs-emoji-popup {
+  position: fixed;
+  z-index: 1000;
+  width: 220px;
+  max-height: 180px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+.cs-emoji-option {
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+.cs-emoji-option:hover { background: var(--background-modifier-hover); }
+.cs-emoji-option--active { outline: 2px solid var(--interactive-accent); }
+
+/* ── Date picker ────────────────────────────────────────────────────────── */
+.cs-datepicker { display: flex; flex-direction: column; gap: 10px; }
+.cs-datepicker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cs-datepicker-title { font-size: 14px; font-weight: 700; }
+.cs-datepicker-nav {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.cs-datepicker-nav:hover { color: var(--text-normal); }
+.cs-datepicker-dow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.cs-datepicker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cs-datepicker-day {
+  padding: 7px 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-normal);
+  font-size: 13px;
+  cursor: pointer;
+}
+.cs-datepicker-day:hover { background: var(--background-modifier-hover); }
+.cs-datepicker-day--adjacent { color: var(--text-faint); }
+.cs-datepicker-day--today { font-weight: 800; color: var(--interactive-accent); }
+.cs-datepicker-day--sel { background: var(--interactive-accent); color: var(--text-on-accent); }
+.cs-datepicker-day:disabled { opacity: 0.3; cursor: default; }
+.cs-datepicker-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+.cs-datepicker-selected { font-size: 12px; color: var(--text-muted); }
+
+/* ── Settings tab ───────────────────────────────────────────────────────── */
+.cs-settings .setting-item { border-bottom: 1px solid var(--background-modifier-border); }
+
+/* ── Colour picker target ───────────────────────────────────────────────── */
+.cs-colour-target { min-width: 260px; }
