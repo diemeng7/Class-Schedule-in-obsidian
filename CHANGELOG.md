@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 (2026-08-29)
+
+- LICENSE is now the exact official GPL-3.0 text so GitHub recognises the license
+- Copyright and Teacher Planner attribution moved to NOTICE
+
 ## 0.1.2 (2026-08-29)
 
 - Replace LICENSE with the official GPL-3.0 text so GitHub recognises the license
