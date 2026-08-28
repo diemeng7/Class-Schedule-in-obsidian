@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 (2026-08-29)
+
+- Replace LICENSE with the official GPL-3.0 text so GitHub recognises the license
+- Add NOTICE with attribution to the original Teacher Planner project
+
 ## 0.1.1 (2026-08-29)
 
 - Fix review issues: description without the word "Obsidian"
